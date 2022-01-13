@@ -7,19 +7,20 @@ import 'package:flutter/material.dart';
 abstract class HTMLBuilder {
   HTMLBuilder._();
 
-  static String build(
-      {final String htmlTemplate = '',
-      @required final String src,
-      final Color backgroundColor = const Color(0xFFFFFF),
-      final String alt,
-      final bool ar,
-      final List<String> arModes,
-      final String arScale,
-      final bool autoRotate,
-      final int autoRotateDelay,
-      final bool autoPlay,
-      final bool cameraControls,
-      final String iosSrc}) {
+  static String build({
+    String htmlTemplate = '',
+    required String src,
+    Color backgroundColor = const Color(0xFFFFFF),
+    String? alt,
+    bool ar = false,
+    List<String> arModes = const [],
+    String? arScale,
+    bool autoRotate = false,
+    int? autoRotateDelay,
+    bool autoPlay = false,
+    bool cameraControls = false,
+    String? iosSrc,
+  }) {
     final html = StringBuffer(htmlTemplate);
     html.write('<model-viewer');
     html.write(' src="${htmlEscape.convert(src)}"');
@@ -30,26 +31,26 @@ abstract class HTMLBuilder {
     }
     // TODO: animation-name
     // TODO: animation-crossfade-duration
-    if (ar ?? false) {
+    if (ar) {
       html.write(' ar');
     }
-    if (arModes != null) {
+    if (arModes.isNotEmpty) {
       html.write(' ar-modes="${htmlEscape.convert(arModes.join(' '))}"');
     }
     if (arScale != null) {
       html.write(' ar-scale="${htmlEscape.convert(arScale)}"');
     }
-    if (autoRotate ?? false) {
+    if (autoRotate) {
       html.write(' auto-rotate');
     }
     if (autoRotateDelay != null) {
       html.write(' auto-rotate-delay="$autoRotateDelay"');
     }
-    if (autoPlay ?? false) {
+    if (autoPlay) {
       html.write(' autoplay');
     }
     // TODO: skybox-image
-    if (cameraControls ?? false) {
+    if (cameraControls) {
       html.write(' camera-controls');
     }
     // TODO: camera-orbit

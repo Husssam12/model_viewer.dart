@@ -16,17 +16,17 @@ import 'html_builder.dart';
 /// Flutter widget for rendering interactive 3D models.
 class ModelViewer extends StatefulWidget {
   ModelViewer(
-      {Key key,
+      {Key? key,
       this.backgroundColor = Colors.white,
-      @required this.src,
+      required this.src,
       this.alt,
-      this.ar,
-      this.arModes,
+      this.ar = false,
+      this.arModes = const [],
       this.arScale,
-      this.autoRotate,
+      this.autoRotate = false,
       this.autoRotateDelay,
-      this.autoPlay,
-      this.cameraControls,
+      this.autoPlay = false,
+      this.cameraControls = false,
       this.iosSrc})
       : super(key: key);
 
@@ -52,7 +52,7 @@ class ModelViewer extends StatefulWidget {
   /// Configures the model with custom text that will be used to describe the
   /// model to viewers who use a screen reader or otherwise depend on additional
   /// semantic context to understand what they are viewing.
-  final String alt;
+  final String? alt;
 
   /// Enable the ability to launch AR experiences on supported devices.
   final bool ar;
@@ -63,14 +63,14 @@ class ModelViewer extends StatefulWidget {
   /// Controls the scaling behavior in AR mode in Scene Viewer. Set to "fixed"
   /// to disable scaling of the model, which sets it to always be at 100% scale.
   /// Defaults to "auto" which allows the model to be resized.
-  final String arScale;
+  final String? arScale;
 
   /// Enables the auto-rotation of the model.
   final bool autoRotate;
 
   /// Sets the delay before auto-rotation begins. The format of the value is a
   /// number in milliseconds. The default is 3000.
-  final int autoRotateDelay;
+  final int? autoRotateDelay;
 
   /// If this is true and a model has animations, an animation will
   /// automatically begin to play when this attribute is set (or when the
@@ -82,7 +82,7 @@ class ModelViewer extends StatefulWidget {
 
   /// The URL to a USDZ model which will be used on supported iOS 12+ devices
   /// via AR Quick Look.
-  final String iosSrc;
+  final String? iosSrc;
 
   @override
   State<ModelViewer> createState() => _ModelViewerState();
@@ -92,7 +92,7 @@ class _ModelViewerState extends State<ModelViewer> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
-  HttpServer _proxy;
+  HttpServer? _proxy;
 
   @override
   void initState() {
@@ -104,7 +104,7 @@ class _ModelViewerState extends State<ModelViewer> {
   void dispose() {
     super.dispose();
     if (_proxy != null) {
-      _proxy.close(force: true);
+      _proxy!.close(force: true);
       _proxy = null;
     }
   }
@@ -123,8 +123,8 @@ class _ModelViewerState extends State<ModelViewer> {
       initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
       onWebViewCreated: (final WebViewController webViewController) async {
         _controller.complete(webViewController);
-        final host = _proxy.address.address;
-        final port = _proxy.port;
+        final host = _proxy!.address.address;
+        final port = _proxy!.port;
         final url = "http://$host:$port/";
         print('>>>> ModelViewer initializing... <$url>'); // DEBUG
         await webViewController.loadUrl(url);
@@ -190,7 +190,7 @@ class _ModelViewerState extends State<ModelViewer> {
   Future<void> _initProxy() async {
     final url = Uri.parse(widget.src);
     _proxy = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
-    _proxy.listen((final HttpRequest request) async {
+    _proxy?.listen((final HttpRequest request) async {
       //print("${request.method} ${request.uri}"); // DEBUG
       //print(request.headers); // DEBUG
       final response = request.response;
